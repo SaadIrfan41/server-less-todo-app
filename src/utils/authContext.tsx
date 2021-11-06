@@ -6,12 +6,12 @@ const AuthContext = createContext({
   user: null,
   login: () => {},
   logout: () => {},
-  loading: false,
+  loading: true,
 })
 
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null)
-  const [loading, setloading] = useState(false)
+  const [loading, setloading] = useState(true)
 
   useEffect(() => {
     netlifyIdentity.on('login', (user) => {
@@ -25,7 +25,7 @@ export const AuthContextProvider = ({ children }) => {
     })
     netlifyIdentity.on('init', (user) => {
       setUser(user)
-      setloading(true)
+      setloading(false)
       console.log('init event')
     })
 
