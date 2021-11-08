@@ -18,7 +18,7 @@ const authLink = setContext((_, { headers }) => {
     token = user.token.access_token
   }
 
-  console.log('THIS IS USER', token)
+  console.log('THIS IS Token', token)
   return {
     headers: {
       ...headers,

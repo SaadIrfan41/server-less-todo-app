@@ -29,6 +29,7 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     todoList: async (parent, args, { user }) => {
+      console.log('USER ID>>>>>>:', user)
       if (!user) return []
 
       try {

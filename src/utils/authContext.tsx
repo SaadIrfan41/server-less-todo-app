@@ -9,8 +9,8 @@ const AuthContext = createContext({
   loading: true,
 })
 
-export const AuthContextProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
+export const AuthContextProvider = ({ children }: any) => {
+  const [user, setUser] = useState<netlifyIdentity.User | null>(null)
   const [loading, setloading] = useState(true)
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export const AuthContextProvider = ({ children }) => {
     return () => {
       netlifyIdentity.off('login')
     }
-  }, [])
+  }, [user])
 
   const login = () => {
     netlifyIdentity.open()
