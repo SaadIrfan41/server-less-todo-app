@@ -14,7 +14,7 @@ const typeDefs = gql`
   type Task {
     id: ID!
     name: String!
-    userid: String!
+    userid: String
     completed: Boolean!
   }
 
@@ -29,7 +29,7 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     todoList: async (parent, args, { user }) => {
-      // if (!user) return []
+      if (!user) return []
 
       try {
         const results = await client.query(

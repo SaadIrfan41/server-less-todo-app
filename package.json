@@ -15,7 +15,9 @@
     "clean": "gatsby clean"
   },
   "dependencies": {
+    "@apollo/client": "^3.4.16",
     "@brianmmdev/faunaservice": "^1.0.5",
+    "apollo-link-context": "^1.0.20",
     "apollo-server-lambda": "^2.25.3",
     "dotenv": "^10.0.0",
     "faunadb": "^4.4.1",
@@ -35,6 +37,7 @@
     "react-helmet": "^6.1.0"
   },
   "devDependencies": {
+    "@types/netlify-identity-widget": "^1.9.2",
     "autoprefixer": "^10.4.0",
     "gatsby-plugin-postcss": "^5.1.0",
     "postcss": "^8.3.11",
