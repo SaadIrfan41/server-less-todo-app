@@ -1,6 +1,9 @@
 import { useQuery, gql, useMutation } from '@apollo/client'
-
+import Swal from 'sweetalert2'
 import React from 'react'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal)
 
 const GET_ALL_TODO = gql`
   query {
@@ -20,6 +23,14 @@ const ADD_TASK = gql`
   }
 `
 
+const UPDATE_TASK = gql`
+  mutation ($id: ID!, $name: String!) {
+    updateTodo(id: $id, name: $name) {
+      name
+    }
+  }
+`
+
 type taskprops = {
   name: string
   completed: string
@@ -34,7 +45,11 @@ const index = () => {
       refetchQueries: [{ query: GET_ALL_TODO }],
     }
   )
-  if (loading || addloading) {
+  const [updateTodo, { loading: updateloading, error: updateerror }] =
+    useMutation(UPDATE_TASK, {
+      refetchQueries: [{ query: GET_ALL_TODO }],
+    })
+  if (loading || addloading || updateloading) {
     return <h1>Loading...</h1>
   }
   if (error) {
@@ -59,6 +74,27 @@ const index = () => {
     } catch (error) {
       console.log(error)
       // toast.error(error.message)
+    }
+  }
+
+  const handleEdit = async (id: string) => {
+    const result = await Swal.fire({
+      title: 'Enter Task',
+      input: 'text',
+      inputAttributes: {
+        autocapitalize: 'off',
+      },
+      showCancelButton: true,
+      backdrop: true,
+      confirmButtonText: 'Submit',
+      allowOutsideClick: () => !Swal.isLoading(),
+    })
+
+    if (result.value) {
+      console.log(result.value)
+      await updateTodo({
+        variables: { id: id, name: result.value },
+      })
     }
   }
 
@@ -109,12 +145,15 @@ const index = () => {
                     </a>
                   </div>
                   <div>
-                    <a
-                      href='#'
+                    <button
+                      onClick={() => {
+                        console.log(task.id)
+                        handleEdit(task.id)
+                      }}
                       className='inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50'
                     >
                       Edit
-                    </a>
+                    </button>
                   </div>
                   <div>
                     <a

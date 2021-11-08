@@ -71,10 +71,12 @@ const resolvers = {
         console.log(err)
       }
     },
-    updateTodo: async (_, { id, name }) => {
+    updateTodo: async (_, { id, name }, { user }) => {
       console.log('id: ', id)
       console.log('task: ', name)
-
+      if (!user) {
+        throw new Error('Must be authenticated to Update todos')
+      }
       try {
         const result = await client.query(
           q.Update(q.Ref(q.Collection('todos'), id), {
