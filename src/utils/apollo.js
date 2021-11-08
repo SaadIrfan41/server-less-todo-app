@@ -1,28 +1,30 @@
 import fetch from 'cross-fetch'
-import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
-import netlifyIdentity from 'netlify-identity-widget'
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client'
 import { setContext } from 'apollo-link-context'
+import netlifyIdentity from 'netlify-identity-widget'
+
+const httpLink = new HttpLink({
+  uri: '/.netlify/functions/todo',
+  fetch,
+})
 
 const authLink = setContext((_, { headers }) => {
   netlifyIdentity.init({})
+
   const user = netlifyIdentity.currentUser()
 
   let token = null
-  if (user) {
+  if (!!user) {
     token = user.token.access_token
-    console.log(user)
   }
 
+  console.log('THIS IS USER', token)
   return {
     headers: {
       ...headers,
       Authorization: token ? `Bearer ${token}` : '',
     },
   }
-})
-const httpLink = new HttpLink({
-  uri: '/.netlify/functions/todo',
-  fetch,
 })
 
 export const client = new ApolloClient({

@@ -33,7 +33,7 @@ const resolvers = {
 
       try {
         const results = await client.query(
-          q.Paginate(q.Match(q.Index('filter_by_userid'), '24'))
+          q.Paginate(q.Match(q.Index('filter_by_userid'), user))
         )
         return results.data.map(([ref, name, completed]) => ({
           id: ref.id,
@@ -47,17 +47,17 @@ const resolvers = {
   },
   Mutation: {
     addTodo: async (_, { name }, { user }) => {
-      console.log(name)
-      // if (!user) {
-      //   throw new Error('Must be authenticated to insert todos')
-      // }
+      console.log('USER ID>>>>>>:', user)
+      if (!user) {
+        throw new Error('Must be authenticated to insert todos')
+      }
       try {
         const result = await client.query(
           q.Create(q.Collection('todos'), {
             data: {
               name: name,
               completed: false,
-              userid: '24',
+              userid: user,
             },
           })
         )
@@ -135,12 +135,16 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ context }) => {
-    if (context?.clientContext?.user) {
-      return { user: context?.clientContext?.user.sub }
+    if (context.clientContext.user) {
+      return {
+        user: context.clientContext.user.sub,
+      }
     } else {
-      return {}
+      return { user: null }
     }
   },
+  playground: true,
+  introspection: true,
 })
 
 const handler = server.createHandler()
