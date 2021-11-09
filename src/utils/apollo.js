@@ -4,7 +4,7 @@ import { setContext } from 'apollo-link-context'
 import netlifyIdentity from 'netlify-identity-widget'
 
 const httpLink = new HttpLink({
-  uri: '/api/todo',
+  uri: '/.netlify/functions/todo',
   fetch,
 })
 
