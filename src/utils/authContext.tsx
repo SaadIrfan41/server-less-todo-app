@@ -46,7 +46,7 @@ export const AuthContextProvider = ({ children }: any) => {
   }
 
   const context = { user, login, logout, loading }
-
+  //@ts-ignore
   return <AuthContext.Provider value={context}>{children}</AuthContext.Provider>
 }
 

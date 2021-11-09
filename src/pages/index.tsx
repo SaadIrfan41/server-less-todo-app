@@ -1,16 +1,9 @@
-import {
-  useQuery,
-  gql,
-  useMutation,
-  useLazyQuery,
-  NetworkStatus,
-} from '@apollo/client'
+import { useQuery, gql, useMutation } from '@apollo/client'
 import Swal from 'sweetalert2'
 import React, { useContext, useEffect } from 'react'
 import withReactContent from 'sweetalert2-react-content'
 import AuthContext from '../utils/authContext'
-
-const MySwal = withReactContent(Swal)
+import { toast } from 'react-toastify'
 
 const GET_ALL_TODO = gql`
   query {
@@ -116,12 +109,13 @@ const index = () => {
       await addTodo({
         variables: { name: name?.value },
       })
+      toast.success('TODO ADDED')
 
-      // toast.success('Category Updated')
       // Router.push('/dashboard/category')
     } catch (error) {
-      console.log(error)
-      // toast.error(error.message)
+      // console.log(error)
+      //@ts-ignore
+      toast.error(error.message)
     }
   }
 
@@ -143,6 +137,7 @@ const index = () => {
       await updateTodo({
         variables: { id: id, name: result.value },
       })
+      toast.success('TODO UPDATED')
     }
   }
 
@@ -160,8 +155,8 @@ const index = () => {
 
   const handelDelete = async (id: string) => {
     try {
-      const res = await deleteTodo({ variables: { id } })
-      return res
+      await deleteTodo({ variables: { id } })
+      toast.error('TODO DELETED')
     } catch (error) {
       console.log(error)
     }
