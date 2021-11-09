@@ -1,4 +1,10 @@
-import { useQuery, gql, useMutation, useLazyQuery } from '@apollo/client'
+import {
+  useQuery,
+  gql,
+  useMutation,
+  useLazyQuery,
+  NetworkStatus,
+} from '@apollo/client'
 import Swal from 'sweetalert2'
 import React, { useContext, useEffect } from 'react'
 import withReactContent from 'sweetalert2-react-content'
@@ -56,18 +62,12 @@ type taskprops = {
 
 const index = () => {
   const { user } = useContext(AuthContext)
+  const { loading, refetch, error, data } = useQuery(GET_ALL_TODO)
   useEffect(() => {
-    if (user) {
-      todoList()
-    }
-    if (called) {
-      console.log('THIS IS CALLED')
-      //@ts-ignore
-      refetch()
-    }
+    refetch()
+    console.log('UseEffect is called')
   }, [user])
-  const [todoList, { loading, refetch, called, error, data }] =
-    useLazyQuery(GET_ALL_TODO)
+
   const [addTodo, { loading: addloading, error: adderror }] = useMutation(
     ADD_TASK,
     {
