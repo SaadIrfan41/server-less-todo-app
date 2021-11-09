@@ -31,9 +31,24 @@ const UPDATE_TASK = gql`
   }
 `
 
+const UPDATE_TASK_COMPLETED = gql`
+  mutation ($id: ID!, $completed: Boolean!) {
+    updateCompleted(id: $id, completed: $completed) {
+      completed
+    }
+  }
+`
+const DELETE_TASK = gql`
+  mutation ($id: ID!) {
+    deleteTodo(id: $id) {
+      name
+    }
+  }
+`
+
 type taskprops = {
   name: string
-  completed: string
+  completed: Boolean
   id: string
 }
 
@@ -49,7 +64,26 @@ const index = () => {
     useMutation(UPDATE_TASK, {
       refetchQueries: [{ query: GET_ALL_TODO }],
     })
-  if (loading || addloading || updateloading) {
+
+  const [
+    updateCompleted,
+    { loading: updateCompletedloading, error: updateCompletederror },
+  ] = useMutation(UPDATE_TASK_COMPLETED, {
+    refetchQueries: [{ query: GET_ALL_TODO }],
+  })
+
+  const [deleteTodo, { loading: deleteloading, error: deleteerror }] =
+    useMutation(DELETE_TASK, {
+      refetchQueries: [{ query: GET_ALL_TODO }],
+    })
+
+  if (
+    loading ||
+    addloading ||
+    updateloading ||
+    updateCompletedloading ||
+    deleteloading
+  ) {
     return <h1>Loading...</h1>
   }
   if (error) {
@@ -98,6 +132,27 @@ const index = () => {
     }
   }
 
+  const handleCompleted = async (id: string, completed: Boolean) => {
+    console.log(id, completed)
+    try {
+      const res = await updateCompleted({
+        variables: { id, completed },
+      })
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handelDelete = async (id: string) => {
+    try {
+      const res = await deleteTodo({ variables: { id } })
+      return res
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div>
       <div className='flex justify-center '>
@@ -137,12 +192,18 @@ const index = () => {
                     </p>
                   </div>
                   <div>
-                    <a
-                      href='#'
-                      className='inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50'
+                    <button
+                      onClick={() => {
+                        handleCompleted(task.id, task.completed)
+                      }}
+                      className={`${
+                        task.completed
+                          ? 'bg-green-300 inline-flex items-center shadow-sm px-2.5 py-0.5 border  text-sm leading-5 font-medium rounded-full text-green-900 hover:bg-green-500'
+                          : 'bg-yellow-300 inline-flex items-center shadow-sm px-2.5 py-0.5 border  text-sm leading-5 font-medium rounded-full text-yellow-900 hover:bg-yellow-500'
+                      } `}
                     >
-                      Completed
-                    </a>
+                      {task.completed ? 'Completed' : 'Pending...'}
+                    </button>
                   </div>
                   <div>
                     <button
@@ -150,18 +211,21 @@ const index = () => {
                         console.log(task.id)
                         handleEdit(task.id)
                       }}
-                      className='inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50'
+                      className='inline-flex hover:bg-blue-700 hover:text-white text-blue-700 border-2 border-blue-500 border-opacity-100 items-center shadow-sm px-2.5 py-0.5 transition duration-500 text-sm leading-5 font-medium rounded-full  bg-white '
                     >
                       Edit
                     </button>
                   </div>
                   <div>
-                    <a
-                      href='#'
-                      className='inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50'
+                    <button
+                      onClick={() => {
+                        console.log(task.id)
+                        handelDelete(task.id)
+                      }}
+                      className='inline-flex hover:bg-red-700 transition duration-500 hover:text-white text-red-700 border border-red-500 border-opacity-100 items-center shadow-sm px-2.5 py-0.5  text-sm leading-5 font-medium rounded-full  bg-white '
                     >
                       Delete
-                    </a>
+                    </button>
                   </div>
                 </div>
               </li>

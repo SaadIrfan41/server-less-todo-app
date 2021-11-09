@@ -4,8 +4,7 @@ import AuthContext from '../utils/authContext'
 
 const Navbar = () => {
   const { user, login, logout, loading } = useContext(AuthContext)
-  console.log(user)
-  console.log('Hello world')
+
   return (
     <>
       {/* {loading ? (

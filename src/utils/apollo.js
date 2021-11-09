@@ -4,7 +4,7 @@ import { setContext } from 'apollo-link-context'
 import netlifyIdentity from 'netlify-identity-widget'
 
 const httpLink = new HttpLink({
-  uri: '/.netlify/functions/todo',
+  uri: '/api/todo',
   fetch,
 })
 
@@ -14,11 +14,10 @@ const authLink = setContext((_, { headers }) => {
   const user = netlifyIdentity.currentUser()
 
   let token = null
-  if (!!user) {
+  if (user) {
     token = user.token.access_token
   }
 
-  console.log('THIS IS Token', token)
   return {
     headers: {
       ...headers,
