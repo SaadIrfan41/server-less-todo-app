@@ -1,7 +1,8 @@
-import { useQuery, gql, useMutation } from '@apollo/client'
+import { useQuery, gql, useMutation, useLazyQuery } from '@apollo/client'
 import Swal from 'sweetalert2'
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import withReactContent from 'sweetalert2-react-content'
+import AuthContext from '../utils/authContext'
 
 const MySwal = withReactContent(Swal)
 
@@ -15,6 +16,7 @@ const GET_ALL_TODO = gql`
     }
   }
 `
+
 const ADD_TASK = gql`
   mutation ($name: String!) {
     addTodo(name: $name) {
@@ -53,7 +55,19 @@ type taskprops = {
 }
 
 const index = () => {
-  const { loading, error, data } = useQuery(GET_ALL_TODO)
+  const { user } = useContext(AuthContext)
+  useEffect(() => {
+    if (user) {
+      todoList()
+    }
+    if (called) {
+      console.log('THIS IS CALLED')
+      //@ts-ignore
+      refetch()
+    }
+  }, [user])
+  const [todoList, { loading, refetch, called, error, data }] =
+    useLazyQuery(GET_ALL_TODO)
   const [addTodo, { loading: addloading, error: adderror }] = useMutation(
     ADD_TASK,
     {
@@ -180,7 +194,7 @@ const index = () => {
       <div className='flex justify-center '>
         <div className='flow-root mt-6 w-screen max-w-6xl'>
           <ul className='-my-5 divide-y divide-gray-200'>
-            {data.todoList.map((task: taskprops) => (
+            {data?.todoList?.map((task: taskprops) => (
               <li key={task.id} className='py-4'>
                 <div className='flex items-center space-x-4'>
                   <div className='flex-1 min-w-0 flex'>
